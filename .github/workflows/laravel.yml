@@ -50,37 +50,19 @@ jobs:
       - name: Compile assets for production
         run: npm run production
 
-  copy-files:
+  deploy:
     runs-on: ubuntu-latest
+  
     steps:
-    - uses: actions/checkout@master
-
-    - name: copy files
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.PORT }}
-        overwrite: true
-        source: "./*"
-        target: "/var/www/html"  
-
-  # configure-laravel:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Configure laravel
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.SSH_HOST }}
-  #         username: ${{ secrets.SSH_USERNAME }}
-  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         port: ${{ secrets.PORT }}
-  #         script: |
-  #           cp ~/edionme.com/.env /var/www/html/.env
-  #           cd /var/www/html
-  #           composer install --optimize-autoloader --no-dev
-  #           php artisan optimize
-  #           sudo find /var/www/html -type d -exec chmod 2775 {} \;
-  #           sudo find /var/www/html -type f -exec chmod 0664 {} \;  
-    
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          username: ${{ secrets.SSH_USERNAME }}
+          script: |
+            cd /var/www/html/
+            git checkout -f 
+            git pull origin master
