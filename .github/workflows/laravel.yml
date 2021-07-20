@@ -1,3 +1,5 @@
+#Pipeline divided in 3 stages - Laravel-tests,Build and Deploy
+
 name: Laravel
 
 on:
@@ -79,3 +81,4 @@ jobs:
             script: |
               echo "Application Deployed"
               echo "Access website https://laravel.labs2.dnx.host/"
+
