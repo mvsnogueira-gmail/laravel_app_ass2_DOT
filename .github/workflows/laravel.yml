@@ -35,7 +35,7 @@ jobs:
       run: vendor/bin/phpunit
   
   build:
-
+    needs: laravel-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -52,6 +52,7 @@ jobs:
         run: npm run production
 
   copy-files:
+    need: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -67,21 +68,21 @@ jobs:
         source: "./*"
         target: "/var/www/html"  
 
-  configure-laravel:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure laravel
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cp ~/edionme.com/.env /var/www/html/.env
-            cd /var/www/html
-            composer install --optimize-autoloader --no-dev
-            php artisan optimize
-            sudo find /var/www/html -type d -exec chmod 2775 {} \;
-            sudo find /var/www/html -type f -exec chmod 0664 {} \;  
+  # configure-laravel:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Configure laravel
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.SSH_HOST }}
+  #         username: ${{ secrets.SSH_USERNAME }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         port: ${{ secrets.PORT }}
+  #         script: |
+  #           cp ~/edionme.com/.env /var/www/html/.env
+  #           cd /var/www/html
+  #           composer install --optimize-autoloader --no-dev
+  #           php artisan optimize
+  #           sudo find /var/www/html -type d -exec chmod 2775 {} \;
+  #           sudo find /var/www/html -type f -exec chmod 0664 {} \;  
     
