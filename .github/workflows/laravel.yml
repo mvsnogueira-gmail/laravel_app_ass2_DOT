@@ -1,4 +1,4 @@
-name: CI
+name: Laravel
 
 on:
   push:
@@ -56,8 +56,9 @@ jobs:
       - name: Compile assets
         run: npm run production      
   deploy:
+    needs: [laravel-tests,Build]
     runs-on: ubuntu-latest
-  
+    name: Deploy
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -71,6 +72,10 @@ jobs:
             cd /var/www/html/
       - name: Deploy Laravel
         uses: shivammathur/setup-php@v2
-          script: |
-            echo "Application Deployed"
-            echo "Access website https://laravel.labs2.dnx.host/"
+        with:
+            host: ${{ secrets.SSH_HOST }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            username: ${{ secrets.SSH_USERNAME }}
+            script: |
+              echo "Application Deployed"
+              echo "Access website https://laravel.labs2.dnx.host/"
